@@ -24,11 +24,7 @@ GREEN_TEMP = 82
 OOLONG_TEMP = 90
 HERBAL_TEMP = 100
 menuX = 120
-MENU1a = "Tea Type:"
-MENU1b = "(1) Black, (2) Green, (3) Oolong, (4) Herbal, (5) Other/Custom"
-MENU_BLACKa = "Black Tea:"
-MENU_BLACKb = "100C, 3-5 mins"
-MENU_BLACKc = "Use Recomended Settings? (1) Yes, (2) No, (5) Back"
+MENU_BLACKc = " (1) Yes, (2) No, (5) Back"
 MENU_GREENa = "Green Tea:"
 MENU_GREENb = "82C, 1-2 mins"
 MENU_GREENc = "Use Recomended Settings? (1) Yes, (2) No, (5) Back"
@@ -51,8 +47,8 @@ stage = '0'
 teaType = '0'
 idealTemp = 0
 
-i2c = I2C(0, sda=Pin(8), scl=Pin(9))
-oled = OLED(i2c, Pin(18))
+i2c = I2C(0, sda=Pin(13), scl=Pin(12))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 
 oled.fill(0)
 
@@ -66,7 +62,7 @@ roms = tempSensor.scan()
 def readTemps():
     temps = 0
     sleep(5)
-    for i in range(10):
+    for i in range(1):
         tempSensor.convert_temp()
         sleep(.5)
         for rom in roms:
@@ -79,6 +75,10 @@ def menuSwitch(x):
     sleep(.5)
     return x
 
+servo_bob.duty(150)
+servo_drop.duty(150)
+sleep(.5)
+
 while True:
     oled.fill(0)
     menuX -= 1
@@ -86,10 +86,14 @@ while True:
         menuX = 120
     if stage == '0':
         oled.fill(0)
-        servo_bob.duty(90)
-        servo_drop.duty(90)
-        oled.text(MENU1a, 0, 0)
-        oled.text(MENU1b, menuX, 12)
+        servo_bob.duty(70)
+        servo_drop.duty(70)
+        oled.text("Tea Type:", 0, 0)
+        oled.text("(1) Black", 0, 10)
+        oled.text("(2) Green", 0, 20)
+        oled.text("(3) Oolong", 0, 30)
+        oled.text("(4) Herbal", 0, 40)
+        oled.text("(5) Other/Custom", 0, 50)
         oled.show()
         if button1.value() == 1:
             teaType = 'b'
@@ -121,9 +125,12 @@ while True:
     if stage == '1':
         oled.fill(0)
         if teaType == 'b':
-            oled.text(MENU_BLACKa, 0, 0)
-            oled.text(MENU_BLACKb, 0, 12)
-            oled.text(MENU_BLACKc, menuX, 24)
+            oled.text("Black Tea:", 0, 0)
+            oled.text("100C, 3-5 mins", 0, 10)
+            oled.text("Use Recomended Settings?", menuX, 20)
+            oled.text("(1) Yes", 0, 30)
+            oled.text("(2) No", 0, 40)
+            oled.text("(3) Cancel", 0, 50)
         elif teaType == 'g':
             oled.text(MENU_GREENa, 0, 0)
             oled.text(MENU_GREENb, 0, 12)
@@ -224,6 +231,7 @@ while True:
             stage = 'brew'
             menuX = menuSwitch(menuX)
             endTime = time.time() + t
+            servo_drop.duty(25)
         elif button5.value() == 1:
             stage = '2'
             menuX = menuSwitch(menuX)
@@ -264,6 +272,7 @@ while True:
             stage = 'brew'
             menuX = menuSwitch(menuX)
             endTime = time.time() + t
+            servo_drop.duty(25)
         elif button5.value() == 1:
             stage = '0'
             menuX = menuSwitch(menuX)
@@ -272,7 +281,6 @@ while True:
 
     if stage == 'brew':
         oled.fill(0)
-        servo_drop.duty(20)
         while endTime > time.time():
             menuX -= 1
             if menuX < - 500:
@@ -284,9 +292,9 @@ while True:
             oled.text("(1) Pause, (5) Cancel", menuX, 24)
             oled.show()
             if remainingTime % 2 == 0:
-                servo_bob.duty(70)
+                servo_bob.duty(100)
             else:
-                servo_bob.duty(110)
+                servo_bob.duty(40)
                 
             if button1.value() == 1:
                 stage = 'pause'
