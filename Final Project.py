@@ -10,11 +10,11 @@ import math
 servo_bob = PWM(Pin(2), freq=50)
 servo_drop = PWM(Pin(3), freq=50)
 pin = Pin(1, Pin.IN)
-button1 = Pin(21, Pin.IN)
-button2 = Pin(33, Pin.IN)
-button3 = Pin(34, Pin.IN)
-button4 = Pin(35, Pin.IN)
-button5 = Pin(36, Pin.IN)
+button1 = Pin(34, Pin.IN, Pin.PULL_DOWN)
+button2 = Pin(35, Pin.IN, Pin.PULL_DOWN)
+button3 = Pin(36, Pin.IN, Pin.PULL_DOWN)
+button4 = Pin(37, Pin.IN, Pin.PULL_DOWN)
+button5 = Pin(38, Pin.IN, Pin.PULL_DOWN)
 degreesC = 0
 degreesF = 0
 start = 0
@@ -75,8 +75,8 @@ def menuSwitch(x):
     sleep(.5)
     return x
 
-servo_bob.duty(150)
-servo_drop.duty(150)
+servo_bob.duty(50)
+servo_drop.duty(50)
 sleep(.5)
 
 while True:
@@ -294,7 +294,7 @@ while True:
             if remainingTime % 2 == 0:
                 servo_bob.duty(100)
             else:
-                servo_bob.duty(40)
+                servo_bob.duty(50)
                 
             if button1.value() == 1:
                 stage = 'pause'
