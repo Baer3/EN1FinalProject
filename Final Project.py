@@ -9,7 +9,7 @@ import math
 
 servo_bob = PWM(Pin(2), freq=50)
 servo_drop = PWM(Pin(3), freq=50)
-pin = Pin(1, Pin.IN)
+pin = Pin(1, Pin.IN, Pin.PULL_UP)
 button1 = Pin(34, Pin.IN, Pin.PULL_DOWN)
 button2 = Pin(35, Pin.IN, Pin.PULL_DOWN)
 button3 = Pin(36, Pin.IN, Pin.PULL_DOWN)
@@ -62,7 +62,7 @@ roms = tempSensor.scan()
 def readTemps():
     temps = 0
     sleep(5)
-    for i in range(1):
+    for i in range(10):
         tempSensor.convert_temp()
         sleep(.5)
         for rom in roms:
@@ -183,7 +183,8 @@ while True:
         oled.text(MENU_TEMP2a, 0, 0)
         oled.text(MENU_TEMP2b, 0, 12)
         oled.show()
-        degreesC = readTemps() + 50
+        degreesC = readTemps()
+        print(degreesC)
         degreesF = (degreesC * (9/5)) + 32
         if degreesC < 50:
             stage = 'cold'
@@ -292,23 +293,23 @@ while True:
             oled.text("(1) Pause, (5) Cancel", menuX, 24)
             oled.show()
             if remainingTime % 2 == 0:
-                servo_bob.duty(100)
+                servo_bob.duty(125)
             else:
                 servo_bob.duty(50)
                 
             if button1.value() == 1:
                 stage = 'pause'
-                servo_bob.duty(125)
+                servo_bob.duty(50)
                 menuX = menuSwitch(menuX)
                 break
             elif button5.value() == 1:
                 stage = '0'
-                servo_bob.duty(125)
+                servo_bob.duty(50)
                 menuX = menuSwitch(menuX)
                 break
         if stage == 'brew':
             stage = 'fin'
-            servo_bob.duty(125)
+            servo_bob.duty(50)
 
 
 
